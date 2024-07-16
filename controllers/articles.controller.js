@@ -1,4 +1,4 @@
-const { selectArticleByID} = require('../models/articles.models');
+const { selectArticleByID, selectAllArticles} = require('../models/articles.models');
 
 
 exports.getArticleByID = async (req, res, next) => {
@@ -12,3 +12,16 @@ exports.getArticleByID = async (req, res, next) => {
         next(error)
     }
 }
+exports.getAllArticles = async (req, res, next) => {
+    try {
+        const articles = await selectAllArticles()
+    
+        const formattedArticles = articles.map(article => {
+            const {body, ...rest} = article
+            return rest
+        })
+        res.status(200).send({ articles: formattedArticles})
+    } catch (error) {
+        next(error)
+    }
+    }
