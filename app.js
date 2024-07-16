@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const { getAllTopics } = require('./controllers/topics.controller');
 const {getEndpoint} = require('./controllers/endpoints.controller')
-const {getArticleByID, getAllArticles} = require('./controllers/articles.controller')
+const {getArticleByID, getAllArticles, getArticleCommentsByID} = require('./controllers/articles.controller')
 
 
 
@@ -12,6 +12,7 @@ app.get('/api', getEndpoint)
 app.get('/api/topics', getAllTopics)
 app.get('/api/articles/:article_id', getArticleByID)
 app.get('/api/articles', getAllArticles)
+app.get('/api/articles/:article_id/comments', getArticleCommentsByID)
 
 app.use('/*', (req, res, next) => {
     res.status(404).send({ message: 'route is invalid' });
@@ -32,8 +33,11 @@ app.use((err,req, res, next) => {
         res.status(400).send({ message: 'Syntax error'})
     } else if (err.code === '42P01') {
         res.status(400).send({message: 'Table Undefined'})
-    } else if (err.code === '08001') {
+     } else if (err.code === '42702') {
+        res.status(400).send({message: 'Undefined Function'})
+     } else if (err.code === '08001') {
         res.status(500).send({message: 'Unable to establish SQL connection'})
+   
     } else {
         next(err)
     }
