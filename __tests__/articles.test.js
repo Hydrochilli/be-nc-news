@@ -7,8 +7,8 @@ const app = require('../app.js');
 beforeEach(() => seed(testData))
 afterAll(() => db.end())
 
-describe('should return an article by article_id', () => {
-    it('returns an object with the correct property key: value pairs- fitting the ID given', async () => {
+describe('GET api/articles/:article_id, should return an article by article_id', () => {
+    it('returns an object with the correct property key-value pairs- fitting the ID given', async () => {
         const { body } = await request(app).get('/api/articles/2').expect(200)
         const {article} = body;
        
@@ -32,3 +32,31 @@ test('should return a 404 if it is an invalid article-id', async () => {
 test('should return a 400 if ID-request-input is in wrong format e.g a string ', async () => {
     await request(app).get('/api/articles/not-a-number').expect(400)
 })
+
+describe('GET /api/articles selectAllArticles', () => {
+    test('should return an array of all article objects, in descending order by date', async () => {
+    const { body } = await request(app).get('/api/articles').expect(200)
+    
+    expect(body.articles.length).toBe(13)
+    expect(body.articles).toBeSortedBy('created_at', { descending: true });
+     })
+    
+    test('should not include body in properties and shouod have comment_count property', async () => {
+       const { body } = await request(app).get('/api/articles').expect(200)
+       body.articles.forEach(article => {
+        expect(article).not.toHaveProperty('body')
+        expect(article).toHaveProperty('comment_count')
+       
+    }) 
+    })
+    describe('Get request for invalid route', () => {
+        test('should return a 404 status for invalid routes', async () => {
+          const { body } = 
+          await request(app)
+          .get('/api/articled')
+          .expect(404);
+          expect(body.message).toBe('route is invalid');
+        })
+      })
+
+ })
