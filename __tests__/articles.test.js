@@ -33,7 +33,7 @@ test('should return a 400 if ID-request-input is in wrong format e.g a string ',
 })
 
 describe('GET /api/articles selectAllArticles', () => {
-    test('should return an array of all article objects, in descending order by date', async () => {
+    test('returns an array of all article objects, in descending order by date', async () => {
     const { body } = await request(app).get('/api/articles').expect(200)
     
     expect(body.articles.length).toBe(13)
@@ -120,4 +120,58 @@ test('should return a 200 status and a message and an empty array when there is 
    
  })
 })
+ describe('POST /api/articles/:article_id/comments', () => {
+  test('returns 201 and posts a request to an article and sends back a copy of the posted message', async () => {
+    const { body } = await request(app)
+      .post('/api/articles/3/comments')
+      .send({ username: 'rogersop', body: 'This article is a bit far fetched' })
+      .expect(201);
+     expect(body.comment).toMatchObject({
+        comment_id: 19,
+        body: 'This article is a bit far fetched',
+        article_id: 3,
+        author: 'rogersop',
+        votes: 0,
+        created_at: expect.any(String),
+      })
+
+    
+  })
+ describe('Handles a range of possible errors correctly for the situation - 404 - 400 -etc', () => {
+  test('returns a 400 if username does not exist with "user does not exist" message', async () => {
+    const { body } = await request(app)
+     .post('/api/articles/1/comments')
+     .send({ username: 'delta', body: 'This article is a bit far fetched'})
+     .expect(400)
+     expect(body.message).toBe('user does not exist')
+  })
+  test('returns a 404 with "No article with that ID" message', async () => {
+    const {body} = await request(app)
+     .post('/api/articles/55255/comments')
+     .send({username:'rogersop', body: 'This article is a bit far fetched' })
+     .expect(404)
+     expect(body.message).toBe('No article with that ID')
+    })
+    test('returns a 400 if article_id is not a number with informative message', async () =>  {
+      const {body} = await request(app)
+      .post('/api/articles/not-a-number/comments')
+      .send({username:'rogersop', body: 'This article is a bit far fetched' })
+      .expect(400)
+      expect(body.message).toBe('Input must be a number')
+
+    })
+    test('returns 400 if request body missing required properties, with message ', async () => {
+      const {body} = await request(app)
+      .post('/api/articles/5/comments')
+      .send({username: 'rogersop'})
+      .expect(400)
+      expect(body.message).toBe('request body invalid')
+    })
+  })
+})
+
+
+
+
+
 
