@@ -1,4 +1,4 @@
-const { selectArticleByID, selectAllArticles, selectArticleCommentsByID} = require('../models/articles.models');
+const { selectArticleByID, selectAllArticles, selectArticleCommentsByID, insertArticleCommentByID} = require('../models/articles.models');
 
 
 exports.getArticleByID = async (req, res, next) => {
@@ -31,10 +31,24 @@ exports.getArticleCommentsByID = async(req, res, next) => {
     const comments = await selectArticleCommentsByID(article_id)
     if(comments.length === 0){
         res.status(200).send({message: 'No comments found for article_id'})
-    }
+    }else{
    
     res.status(200).send({ comments });
-  }catch(error){
+  }
+}catch(error){
     next(error)
   }
-}
+};
+exports.addArticleCommentByID= async (req, res, next) => {
+    try {
+      const { article_id } = req.params;
+      const { username, body } = req.body;
+     
+      const comment = await insertArticleCommentByID(article_id, username, body);
+     
+      res.status(201).send({ comment });
+  
+    } catch (error) {
+      next(error);
+    }
+  };

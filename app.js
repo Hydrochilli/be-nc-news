@@ -2,18 +2,19 @@ const express = require('express');
 const app = express();
 const { getAllTopics } = require('./controllers/topics.controller');
 const {getEndpoint} = require('./controllers/endpoints.controller')
-const {getArticleByID, getAllArticles, getArticleCommentsByID} = require('./controllers/articles.controller')
+const {getArticleByID, getAllArticles, getArticleCommentsByID, addArticleCommentByID} = require('./controllers/articles.controller')
 
 
 
 
+app.use(express.json())
 
 app.get('/api', getEndpoint)
 app.get('/api/topics', getAllTopics)
 app.get('/api/articles/:article_id', getArticleByID)
 app.get('/api/articles', getAllArticles)
 app.get('/api/articles/:article_id/comments', getArticleCommentsByID)
-
+app.post('/api/articles/:article_id/comments', addArticleCommentByID)
 app.use('/*', (req, res, next) => {
     res.status(404).send({ message: 'route is invalid' });
   });
@@ -26,6 +27,7 @@ app.use((err, req, res, next) => {
     }
 })
 app.use((err,req, res, next) => {
+    
     if(err.code === '22P02') {
         res.status(400).send({message: 'Input must be a number'})
   
