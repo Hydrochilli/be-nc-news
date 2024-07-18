@@ -19,7 +19,7 @@ app.post('/api/articles/:article_id/comments', addArticleCommentByID)
 app.patch('/api/articles/:article_id', patchArticleVotesByID)
 app.delete('/api/comments/:comment_id', deleteCommentByCommentID)
 app.use('/*', (req, res, next) => {
-    res.status(404).send({ message: 'route is invalid' });
+    res.status(404).send({ message: 'route or query is invalid' });
   });
 
 app.use((err, req, res, next) => {
