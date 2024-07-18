@@ -26,7 +26,7 @@ describe('/api/topics', () => {
     await request(app)
     .get('/api/invalid-route')
     .expect(404);
-    expect(body.message).toBe('route is invalid');
+    expect(body.message).toBe('route or query is invalid');
   })
 })
 })

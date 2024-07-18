@@ -64,7 +64,7 @@ describe('GET /api/articles selectAllArticles', () => {
           await request(app)
           .get('/api/articled')
           .expect(404);
-          expect(body.message).toBe('route is invalid');
+          expect(body.message).toBe('route or query is invalid');
         })
       })
       describe(' getArticleCommentsByID /api/articles/:article_id/comments', () => {
@@ -278,6 +278,14 @@ describe('GET /api/users selectAllUsers', () => {
       .expect(200)
     expect(body.articles).toBeSortedBy('title', {descending: false})
     })
+    test('returns articles of a single topic when requested in the query', async () => {
+      const {body} = await request(app)
+      .get('/api/articles?topic=mitch')
+      .expect(200)
+      body.articles.forEach(article => {
+        expect(article.topic).toBe('mitch')
+      })
+    })
     test('returns 400 for invalid sort_by query', async () => {
       const {body} = await request(app)
       .get('/api/articles?sort_by=date')
@@ -290,14 +298,18 @@ describe('GET /api/users selectAllUsers', () => {
       .expect(400)
     expect(body.message).toBe('Invalid query request')
     })
-    
+    test('returns 404 for topic that does not exist', async () => {
+      const {body} = await request(app)
+      .get('/api/article?topic=dogs')
+      .expect(404)
+    expect(body.message).toBe('route or query is invalid')
+    })
   
  
   })
   
     })
    })
-
- 
+  
  
 
