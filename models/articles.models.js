@@ -85,3 +85,12 @@ exports.removeCommentByCommentID = async (comment_id) => {
         return Promise.reject({status: 404, message: 'No comment with that ID'})
     }
 }
+
+exports.selectAllUsers = async () => {
+    const {rows} = await db.query(`
+        SELECT username, name, avatar_url
+         FROM users       
+       `)
+        
+    return rows
+}

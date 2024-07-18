@@ -3,7 +3,7 @@ const testData = require('../db/data/test-data/index');
 const seed = require('../db/seeds/seed');
 const db = require('../db/connection');
 const app = require('../app.js');
-
+const userData = require('../db/data/test-data/users.js')
 beforeEach(() => seed(testData))
 afterAll(() => db.end())
 
@@ -227,4 +227,35 @@ describe('DELETE /api/comments/:comment_id', () => {
   expect(body.message).toBe('Input must be a number')
   })
 })
- })
+describe('GET /api/users selectAllUsers', () => {
+  test('returns 200 and responds with an array of all users.', async () => {
+  const { body } = await request(app)
+  .get('/api/users')
+  .expect(200)
+  
+  expect(body.users.length).toBe(4)
+
+  
+   })
+   test('each of the array objects contains the keys; username, name, avatar_url ', async () => {
+    const {body} = await request(app)
+    .get('/api/users')
+    .expect(200)
+    const {users } = body
+    expect(users[0]).toMatchObject(  {
+      username: 'butter_bridge',
+      name: 'jonny',
+      avatar_url:
+        'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+    })
+  users.forEach((user, i) => {
+    expect(user).toMatchObject(userData[i])
+    })
+    })
+  
+    })
+   })
+
+ 
+ 
+
