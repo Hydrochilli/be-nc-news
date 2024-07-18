@@ -175,7 +175,7 @@ test('should return a 200 status and a message and an empty array when there is 
       .send({ inc_votes: 1})
       .expect(200)
       const { article } = body;
-      expect(article).toMatchObject({ article_id: 1, votes: expect.any(Number)})
+      expect(article).toMatchObject({ article_id: 1, votes: 101})
       
     })
     test('returns a 404 if the article_id does not exist', async () => {
@@ -207,5 +207,24 @@ test('should return a 200 status and a message and an empty array when there is 
       .expect(400)
     expect(body.message).toBe('invalid request body')
     })
+})
+describe('DELETE /api/comments/:comment_id', () => {
+  test('deletes the selected comment_id and return 204', async () => {
+    await request(app)
+    .delete('/api/comments/1')
+    .expect(204)
+  })
+  test('return 404 if comment_id does not exist', async () => {
+     const {body} = await request(app)
+     .delete('/api/comments/5555555')
+     .expect(404)
+    expect(body.message).toBe('No comment with that ID')
+  })
+  test('returns 400 if the comment_id is not a number', async () => {
+    const {body} = await request(app)
+    .delete('/api/comments/A1')
+    .expect(400)
+  expect(body.message).toBe('Input must be a number')
+  })
 })
  })

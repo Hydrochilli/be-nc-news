@@ -1,4 +1,4 @@
-const { selectArticleByID, selectAllArticles, selectArticleCommentsByID, insertArticleCommentByID, updateArticleVotesByID} = require('../models/articles.models');
+const { selectArticleByID, selectAllArticles, selectArticleCommentsByID, insertArticleCommentByID, updateArticleVotesByID, removeCommentByCommentID} = require('../models/articles.models');
 
 
 exports.getArticleByID = async (req, res, next) => {
@@ -63,5 +63,14 @@ exports.addArticleCommentByID= async (req, res, next) => {
       next(error)
     }
     }
-    
+
+ exports.deleteCommentByCommentID = async(req, res, next) => {
+   const {comment_id} = req.params
+  try{
+   const deletedResponse = await removeCommentByCommentID(comment_id)
+   res.status(204).send()
+ } catch(error) {
+  next(error)
+ }
+ }
   
