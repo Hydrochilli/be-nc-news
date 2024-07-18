@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const { getAllTopics } = require('./controllers/topics.controller');
 const {getEndpoint} = require('./controllers/endpoints.controller')
-const {getArticleByID, getAllArticles, getArticleCommentsByID, addArticleCommentByID} = require('./controllers/articles.controller')
+const {getArticleByID, getAllArticles, getArticleCommentsByID, addArticleCommentByID,patchArticleVotesByID} = require('./controllers/articles.controller')
 
 
 
@@ -15,6 +15,7 @@ app.get('/api/articles/:article_id', getArticleByID)
 app.get('/api/articles', getAllArticles)
 app.get('/api/articles/:article_id/comments', getArticleCommentsByID)
 app.post('/api/articles/:article_id/comments', addArticleCommentByID)
+app.patch('/api/articles/:article_id', patchArticleVotesByID)
 app.use('/*', (req, res, next) => {
     res.status(404).send({ message: 'route is invalid' });
   });

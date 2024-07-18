@@ -138,11 +138,11 @@ test('should return a 200 status and a message and an empty array when there is 
     
   })
  describe('Handles a range of possible errors correctly for the situation - 404 - 400 -etc', () => {
-  test('returns a 400 if username does not exist with "user does not exist" message', async () => {
+  test('returns a 404 if username does not exist with "user does not exist" message', async () => {
     const { body } = await request(app)
      .post('/api/articles/1/comments')
      .send({ username: 'delta', body: 'This article is a bit far fetched'})
-     .expect(400)
+     .expect(404)
      expect(body.message).toBe('user does not exist')
   })
   test('returns a 404 with "No article with that ID" message', async () => {
@@ -168,10 +168,44 @@ test('should return a 200 status and a message and an empty array when there is 
       expect(body.message).toBe('request body invalid')
     })
   })
+  describe('PATCH /api/articles/:article_id', () =>{
+    test('updates the votes of an article and returns the updated article', async () => {
+      const {body} = await request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: 1})
+      .expect(200)
+      const { article } = body;
+      expect(article).toMatchObject({ article_id: 1, votes: expect.any(Number)})
+      
+    })
+    test('returns a 404 if the article_id does not exist', async () => {
+      const {body} = await request(app)
+      .patch('/api/articles/55255')
+      .send({ inc_votes: 1 })
+      .expect(404)
+    expect(body.message).toBe('No article with that ID')
+    })
+    test('returns a 400 if the article_id is not a number', async () => {
+      const {body} = await request(app)
+      .patch('/api/articles/NaN')
+      .send({ inc_votes: 1})
+      .expect(400)
+    expect(body.message).toBe('Input must be a number')
+    })
+    test('returns a 400 if the inc_votes key is missing from request', async () => {     
+       const {body} = await request(app)
+       .patch('/api/articles/3')
+       .send({})
+       .expect(400)
+      expect(body.message).toBe('invalid request body')      
+      
+    })
+    test('returns a 400 when inc_votes is not a number', async () => {
+      const {body} = await request(app)
+      .patch('/api/articles/3')
+      .send({inc_votes: 'three'})
+      .expect(400)
+    expect(body.message).toBe('invalid request body')
+    })
 })
-
-
-
-
-
-
+ })
