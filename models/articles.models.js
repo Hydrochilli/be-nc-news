@@ -11,18 +11,25 @@ if(rows.length === 0) {
 return rows[0] 
 
 }
-exports.selectAllArticles = async () => {
+exports.selectAllArticles = async (sort_by = 'created_at', order = 'desc') => {
+    const greenlistSortBy = ['article_id', 'title', 'topic', 'author', 'created_at', 'votes', 'article_img_url']
+    const greenlistOrder = [ 'asc', 'desc']
+    if(!greenlistSortBy.includes(sort_by) || !greenlistOrder.includes(order))
+        return Promise.reject({status: 400, message: 'Invalid query request'})
+
     const articles = await db.query(`
         SELECT articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url,
                 COUNT(comments.comment_id) AS comment_count
         FROM articles
         LEFT JOIN comments on articles.article_id = comments.article_id
         GROUP BY articles.article_id
-        ORDER BY created_at DESC
+        ORDER BY ${sort_by} ${order}
         `)
 
     return articles.rows
 }
+
+
 exports.selectArticleCommentsByID = async (article_id) => {
     const confirmArticle = await db.query('SELECT * FROM articles WHERE article_id = $1;', [article_id])
     if(confirmArticle.rows.length === 0) {
@@ -94,3 +101,4 @@ exports.selectAllUsers = async () => {
         
     return rows
 }
+

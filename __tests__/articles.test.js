@@ -252,6 +252,48 @@ describe('GET /api/users selectAllUsers', () => {
     expect(user).toMatchObject(userData[i])
     })
     })
+
+  describe('GET /api/articles, with added sort_by and order query functionality', () => {
+    test('returns array of all articles sorted by created_at in descending order by default', async () => {
+       const {body} = await request(app)
+       .get('/api/articles')
+       .expect(200)
+      expect(body.articles).toBeSortedBy('created_at', {descending: true})
+    })
+    test('sorts articles by a valid column when given sort_by query', async () => {
+      const {body} = await request(app)
+      .get('/api/articles?sort_by=title')
+      .expect(200)
+     expect(body.articles).toBeSortedBy('title', { descending: true})
+    })
+    test('returns articles by created_at  in ascending order when provided with this query', async () =>{
+      const {body} = await request(app)
+      .get('/api/articles?order=asc')
+      .expect(200)
+    expect(body.articles).toBeSortedBy('created_at', {descending: false})
+    })
+    test('sorts and orders articles correctly when both sort_by and order used together', async() => {
+      const {body} = await request(app)
+      .get('/api/articles?sort_by=title&order=asc')
+      .expect(200)
+    expect(body.articles).toBeSortedBy('title', {descending: false})
+    })
+    test('returns 400 for invalid sort_by query', async () => {
+      const {body} = await request(app)
+      .get('/api/articles?sort_by=date')
+      .expect(400)
+    expect(body.message).toBe('Invalid query request')
+    })
+    test('return 400 for invalid order query', async () => {
+      const {body} = await request(app)
+      .get('/api/articles?order=sideways')
+      .expect(400)
+    expect(body.message).toBe('Invalid query request')
+    })
+    
+  
+ 
+  })
   
     })
    })
