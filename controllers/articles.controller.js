@@ -1,4 +1,4 @@
-const { selectArticleByID, selectAllArticles, selectArticleCommentsByID, insertArticleCommentByID} = require('../models/articles.models');
+const { selectArticleByID, selectAllArticles, selectArticleCommentsByID, insertArticleCommentByID, updateArticleVotesByID} = require('../models/articles.models');
 
 
 exports.getArticleByID = async (req, res, next) => {
@@ -51,4 +51,17 @@ exports.addArticleCommentByID= async (req, res, next) => {
     } catch (error) {
       next(error);
     }
-  };
+  }
+  exports.patchArticleVotesByID = async (req, res, next) => {
+    const { article_id} = req.params
+    const {inc_votes} = req.body
+
+    try{
+      const updatedArticle = await updateArticleVotesByID(article_id, inc_votes)
+      res.status(200).send({article: updatedArticle }) 
+    } catch(error) {
+      next(error)
+    }
+    }
+    
+  
