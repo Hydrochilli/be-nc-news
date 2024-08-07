@@ -77,8 +77,14 @@ exports.addArticleCommentByID= async (req, res, next) => {
   const { comment_id } = req.params
   const { inc_votes } = req.body
 
+  const voteChange = parseInt(inc_votes, 10)
+
+  if (isNaN(voteChange)) {
+    return res.status(400).send({ message: 'Invalid vote increment'})
+  }
+
   try {
-    const updatedComment = await patchCommentVotesByID(comment_id, inc_votes)
+    const updatedComment = await patchCommentVotesByID(comment_id, voteChange)
     res.status(200).send({ comment: updatedComment })
   }catch (error) {
     next(error)
