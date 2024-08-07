@@ -110,6 +110,24 @@ exports.removeCommentByCommentID = async (comment_id) => {
         return Promise.reject({status: 404, message: 'No comment with that ID'})
     }
 }
+exports.patchCommentVotesByID = async (comment_id, inc_votes) => {
+    if (!inc_votes || typeof inc_votes !== 'number') {
+        return Promise.reject({ status: 400, message: 'Invalid request'})
+    }
+
+    const {rows} = await db.query(
+        `UPDATE comments
+        SET votes = votes + $1
+        WHERE comment_id = $2
+        RETURNING *;`,
+        [inc_votes, comment_id]
+    )
+
+    if(rows.length === 0) {
+        return Promise.reject({ status: 404, message: 'No comment with that ID'})
+    }
+    return rows[0]
+} 
 
 exports.selectAllUsers = async () => {
     const {rows} = await db.query(`

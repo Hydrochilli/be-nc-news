@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const { getAllTopics } = require('./controllers/topics.controller');
 const {getEndpoint} = require('./controllers/endpoints.controller')
-const {getArticleByID, getAllArticles, getArticleCommentsByID, getAllUsers, addArticleCommentByID,patchArticleVotesByID, deleteCommentByCommentID} = require('./controllers/articles.controller')
+const {getArticleByID, getAllArticles, getArticleCommentsByID, getAllUsers, addArticleCommentByID,patchArticleVotesByID, deleteCommentByCommentID, updateCommentVotesByID} = require('./controllers/articles.controller')
 const cors = require('cors')
 
 
@@ -18,6 +18,7 @@ app.get('/api/users', getAllUsers)
 app.post('/api/articles/:article_id/comments', addArticleCommentByID)
 app.patch('/api/articles/:article_id', patchArticleVotesByID)
 app.delete('/api/comments/:comment_id', deleteCommentByCommentID)
+app.patch('/api/comments/:comment_id', updateCommentVotesByID)
 app.use('/*', (req, res, next) => {
     res.status(404).send({ message: 'route or query is invalid' });
   });
